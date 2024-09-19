@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from configs.database import engine, Base
+from utils import models
+from routers import auth
 
 app=FastAPI()
 
@@ -18,9 +20,11 @@ app.add_middleware(
 
 
 # Create all tables in the database
-Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
 async def hello():
     return {"msg":"hello pradeep"}
+
+app.include_router(auth.auth_router)

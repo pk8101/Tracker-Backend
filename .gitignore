@@ -1,0 +1,13 @@
+fastapi/
+
+__pycache__/
+
+.vscode/
+.env
+
+
+
+
+
+
+

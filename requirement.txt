@@ -1,6 +1,7 @@
 fastapi
 uvicorn
 pymysql
+cryptography
 sqlalchemy
 python-dotenv
 pandas

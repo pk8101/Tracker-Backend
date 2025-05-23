@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException
-from src.configs.bcryption import hashPassword,verifyPassword
+from src.security.bcryption import hashPassword,verifyPassword
+from src.security.encode import createAccessToken
 from ..configs.dependency import get_db 
 from src.user.model import UserDetails, UserDetailsUpdate, UserLogin
 from .entity import User
@@ -14,15 +15,15 @@ class UserService:
             currentUser=db.query(User).filter(User.email==userLoginData.email).first()
             if currentUser is not None:
                 if  verifyPassword(userLoginData.password,currentUser.password):
-                    return {"message": "User Login Success",
-                    "token": "need to implement in future"
-                    }
+                    data={"email":currentUser.email,"id":currentUser.id}
+                    token=createAccessToken(data)
+                    return {"message": "User Login Success","token": token}
                 return {"message":"invalid Password try with correct password"}
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=f"User is not present,Please create new account")
         except Exception as e:
             raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=f"'{e}'")
         
-    def createnewUser (self, userdata:UserDetails, db:Session=Depends(get_db)):
+    def createnewUser(self, userdata:UserDetails, db:Session=Depends(get_db)):
         try:
             connection=db.connection()
             SQL=f"select email from user where email='{userdata.email}'" 
@@ -42,7 +43,7 @@ class UserService:
         
     def deleteUser(self, email, db:Session=Depends (get_db)):
         try:
-            current_user=db.query(User).filter_by(email=email). first()
+            current_user=db.query(User).filter_by(email=email).first()
             if current_user is not None: 
                 db. delete(current_user)
                 db. commit()
@@ -50,11 +51,11 @@ class UserService:
             else:
                 raise HTTPException(status_code=HTTPStatus.FORBIDDEN,detail=f"User is Not exists")
         except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=f"' {e}'")
+            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=f"'{e}'")
         
     def userDetailsByEmail (self, email, db: Session=Depends (get_db)):
         try:
-            currentUser=db. query (User). filter_by(email=email). first()
+            currentUser=db.query(User).filter_by(email=email).first()
             if currentUser is not None:
                 userdetails={key: value for key, value in currentUser.__dict__.items() if key!="password"}
                 return userdetails
@@ -64,9 +65,8 @@ class UserService:
         
     def updateUserByEmail (self, email, userData: UserDetailsUpdate, db:Session=Depends (get_db)):
         try:
-            currentUser=db.query(User). filter_by(email=email). first()
+            currentUser=db.query(User).filter_by(email=email).first()
             if currentUser is not None:
-                print("password when user update",hashPassword(userData.password))
                 currentUser.username=userData.username
                 currentUser.password=hashPassword(userData.password)
                 db.add(currentUser)

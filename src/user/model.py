@@ -23,8 +23,8 @@ class UserDetailsUpdate(BaseModel):
     model_config=ConfigDict(
         json_schema_extra={
             "example": {
-            "password": "Pradeep®123",
-            "username": "pradeep."
+            "password": "Pradeep@123",
+            "username": "pradeepk20"
         }
         } 
     )   
@@ -33,4 +33,12 @@ class UserDetailsUpdate(BaseModel):
 class UserLogin(BaseModel):
     email:str 
     password:str
+    model_config=ConfigDict(
+        json_schema_extra={
+            "example": {
+            "password": "Pradeep@123",
+            "email": "pradeep@gmail.com"
+        }
+        } 
+    ) 
     

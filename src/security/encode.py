@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from dotenv import load_dotenv
 from jose import jwt
 import os
@@ -12,7 +12,7 @@ ALGORITHM=os.getenv("ALGORITHM")
 
 def createAccessToken(data:dict):
     try:
-        expiry=datetime.utcnow()+timedelta(minutes=int(EXPIRYTIME))
+        expiry=datetime.now(timezone.utc)+timedelta(minutes=int(EXPIRYTIME))
         data. update({"exp":expiry})
         token=jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
         return token

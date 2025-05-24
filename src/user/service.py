@@ -20,6 +20,8 @@ class UserService:
                     return {"message": "User Login Success","token": token}
                 return {"message":"invalid Password try with correct password"}
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=f"User is not present,Please create new account")
+        except HTTPException as e:
+            raise e
         except Exception as e:
             raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=f"'{e}'")
         
@@ -36,10 +38,12 @@ class UserService:
                 db.commit()
                 return {"message": f"User '{userdata.username}' Created Successfully"}
             else:
-                raise HTTPException (status_code=HTTPStatus.NOT_IMPLEMENTED.value, detail=f"User Already exists with email: '{userdata.email}'")
+                raise HTTPException (status_code=409, detail=f"User Already exists with email: '{userdata.email}'")
+        except HTTPException as e:
+            raise e
         except Exception as e:
             print (f"error while creating the user: '{e}'")
-            raise HTTPException(status_code=HTTPStatus.FAILED_DEPENDENCY.value, detail=f"'{e}'")
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST.value, detail=f"'{e}'")
         
     def deleteUser(self, email, db:Session=Depends (get_db)):
         try:

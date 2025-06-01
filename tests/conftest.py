@@ -11,7 +11,8 @@ def test_user(client:TestClient):
     user_data={
         "username":"testuser1234",
         "email":"testuser@example.com",
-        "password":"Test@123456"
+        "password":"Test@123456",
+        "profileImageUrl": ""
     }
     client.post("user/register",json=user_data)
     return user_data

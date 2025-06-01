@@ -5,6 +5,7 @@ class UserDetails(BaseModel):
     username: str=Field(min_length=10)
     email: str 
     password: str
+    profileImageUrl:str
     model_config=ConfigDict(
     json_schema_extra={
     "example": {

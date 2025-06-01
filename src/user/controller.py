@@ -4,8 +4,11 @@ from src. configs. loggingConfig import log_execution
 from .model import UserDetails, UserDetailsUpdate, UserLogin
 from .service import get_user_service 
 from sqlalchemy.orm import Session
-from fastapi import Depends
+from fastapi import Depends,UploadFile,File,Request
 from src.security.auth import get_current_user
+import os
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 userRouter=APIRouter (
     prefix="/user",
@@ -21,12 +24,19 @@ async def userLogin(
     db:Session=Depends(get_db)):
     return userService.userLogin(userLoginData,db)
 
-@userRouter.get("/")
+@userRouter.get("/user_data")
 @log_execution
 async def userDetails(
     email:str=Depends(get_current_user), 
     db:Session=Depends (get_db)) :
   return userService.userDetailsByEmail(email,db)
+
+@userRouter.post("/upload_image")
+@log_execution
+async def upload_image(
+    request: Request,
+    image: UploadFile = File(...)):
+    return userService.uploadImage(request,image,UPLOAD_DIR)
 
 @userRouter.post("/register")
 @log_execution

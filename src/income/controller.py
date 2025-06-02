@@ -22,7 +22,7 @@ def createNewIncomeSource(
 
 @incomeRouter.get("/income_details")
 @log_execution
-def createNewIncomeSource(
+def showAllIncomeSource(
     db:Session=Depends(get_db),
     email=Depends(get_current_user)):
     return incomeService.incomeDetails(email,db)

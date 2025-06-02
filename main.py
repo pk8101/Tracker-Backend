@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles 
 from src.configs.database import * 
 from src.user.controller import userRouter 
+from src.income.controller import incomeRouter
 from src.user import entity 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,5 +21,6 @@ app.add_middleware(
 def hello():
     return {"hello": "successs running"}
 
+app.include_router(incomeRouter)
 app.include_router(userRouter)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

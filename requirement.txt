@@ -11,3 +11,4 @@ python-jose[cryptography]
 pytest
 httpx
 xlsxwriter
+email_validator

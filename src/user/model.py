@@ -43,3 +43,14 @@ class UserLogin(BaseModel):
         } 
     ) 
     
+class VerifyOTP(BaseModel):
+    email:str 
+    otp:str
+    model_config=ConfigDict(
+        json_schema_extra={
+            "example": {
+            "otp": "123456"
+        }
+        } 
+    )
+    

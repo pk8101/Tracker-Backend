@@ -1,13 +1,17 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException,UploadFile,File,Request
+from fastapi import BackgroundTasks, Depends, HTTPException,UploadFile,File,Request
+from src.utility.emailOTP import send_otp_email
 from src.security.bcryption import hashPassword,verifyPassword
 from src.security.encode import createAccessToken
 from ..configs.dependency import get_db 
-from src.user.model import UserDetails, UserDetailsUpdate, UserLogin
+from src.user.model import UserDetails, UserDetailsUpdate, UserLogin,VerifyOTP
 from .entity import User
 import pandas as pd
 from http import HTTPStatus
 import os,shutil
+import random
+
+pending_registrations = dict()
 
 class UserService:
     def userLogin(self,userLoginData: UserLogin, db:Session=Depends(get_db)):
@@ -93,7 +97,24 @@ class UserService:
             raise HTTPException(status_code=HTTPStatus.NOT_MODIFIED, detail=f"User Updation is unSuccessfull no user with email'{email}'")
         except Exception as e:
             raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f"'{e}'")
+    
+    def triggerEmail(self,userdata:UserDetails,background_tasks:BackgroundTasks):
+        try:
+            otp=str(random.randint(100000,999999))
+            pending_registrations[userdata.email] = {"data": userdata, "otp": otp}
+            background_tasks.add_task(send_otp_email, userdata.email, otp)
+            return {"message":"OTP sent to your email. "}
+        except Exception as e:
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,detail=f"'{e}'")
         
+    def userVeriftOTP(self,otpData:VerifyOTP):
+        reg = pending_registrations.get(otpData.email)
+        if not reg or reg["otp"] != otpData.otp:
+            raise HTTPException(status_code=400, detail="Invalid OTP")
+        return reg
+    
+    def deleteDataInMemory(self,email):
+        del pending_registrations[email]
         
 def get_user_service():
     return UserService()

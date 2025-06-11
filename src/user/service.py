@@ -10,6 +10,7 @@ import pandas as pd
 from http import HTTPStatus
 import os,shutil
 import random
+from src.utility.uploadToGCP import upload_file_to_gcs
 
 pending_registrations = dict()
 
@@ -33,13 +34,12 @@ class UserService:
         try:
             if not image:
                 raise HTTPException(status_code=400, detail="No file uploaded")
-            file_location = os.path.join(UPLOAD_DIR, image.filename)
-            with open(file_location, "wb") as buffer:
-                shutil.copyfileobj(image.file, buffer)
-            image_url = f"{request.url.scheme}://{request.client.host}:{request.url.port}/{UPLOAD_DIR}/{image.filename}"
+            filename = image.filename
+            image.file.seek(0)  
+            image_url = upload_file_to_gcs(image.file, filename, image.content_type)
             return {"imageUrl": image_url}
         except Exception as e:
-            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR,detail=f"'{e}'")
+            raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=f"'{e}'")
         
     def createnewUser(self, userdata:UserDetails, db:Session=Depends(get_db)):
         try:

@@ -11,14 +11,14 @@ class DashboardService:
         SQL=f"select sum(amount) as totalamount from income where userEmail='{email}'"
         df=pd.read_sql_query(SQL,con=connection)
         totalAllIncome=df["totalamount"][0]
-        return totalAllIncome
+        return totalAllIncome if totalAllIncome is not None else 0
     
     def totalExpenses(self,email,db:Session=Depends(get_db)):
         connection=db.connection()
         SQL=f"select sum(amount) as totalamount from expense where userEmail='{email}'"
         df=pd.read_sql_query(SQL,con=connection)
         totalAllExpenses=df["totalamount"][0]
-        return totalAllExpenses
+        return totalAllExpenses if totalAllExpenses is not None else 0
     
     def last30DaysExpenses(self,email,db:Session=Depends(get_db)):
         connection=db.connection()

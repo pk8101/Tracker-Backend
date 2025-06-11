@@ -12,3 +12,4 @@ pytest
 httpx
 xlsxwriter
 email_validator
+google-cloud-storage

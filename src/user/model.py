@@ -11,7 +11,8 @@ class UserDetails(BaseModel):
     "example": {
         "email": "pradeep@gmail.com",
         "password": "Pradeep@123",
-        "username" : "pradeepkanda"
+        "username" : "pradeepkanda",
+        "profileImageUrl":"https://img-url.com"
     }
     },
     from_attributes=True

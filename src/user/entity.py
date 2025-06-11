@@ -8,6 +8,6 @@ class User(Base):
     username=Column (String(100), nullable=False)
     email=Column (String(100), nullable=False, unique=True)
     password=Column (String(255), nullable=False)
-    profileImageUrl=Column(String(255))
+    profileImageUrl=Column(String(4096))
     role=Column (String(20), default='USER')
     created_at=Column (TIMESTAMP, default=func.now ())

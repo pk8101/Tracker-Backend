@@ -1,0 +1,7 @@
+fastapi/
+
+__pycache__/
+
+.vscode/
+
+uploads
